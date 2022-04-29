@@ -1,0 +1,2 @@
+# Use the below command before installing packages in R
+options(repos = c(CRAN = "http://cloud.r-project.org"));
