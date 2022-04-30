@@ -2,6 +2,7 @@
 
 dailyActivityAnalysis <- function(fileNameInput){
     library(viridis)
+    library(tidyverse)
     library("tidyr", help, pos = 2, lib.loc = NULL)
     library("dplyr", help, pos = 2, lib.loc = NULL)
     library("ggplot2")
@@ -17,8 +18,8 @@ dailyActivityAnalysis <- function(fileNameInput){
             dataFrame$dfTime <- dataFrame[[c]]
         }
     }
-    print(colnames(dataFrame))
-    print(head(dataFrame))
+    #print(colnames(dataFrame))
+    #print(head(dataFrame))
     #"Id"                       "ActivityDate"
     # [3] "TotalSteps"               "TotalDistance"
     # [5] "TrackerDistance"          "LoggedActivitiesDistance"
@@ -28,62 +29,115 @@ dailyActivityAnalysis <- function(fileNameInput){
     # [13] "LightlyActiveMinutes"     "SedentaryMinutes"
     # [15] "Calories"                 "dfTime"
 
+    #
+    #Distance by types
+    #
+    curPlot <- ggplot(data=dataFrame, aes(x=SedentaryActiveDistance, y=TotalDistance, group=Calories)) +
+        scale_color_viridis(option = "D")+  aes(color=Calories) + geom_point() 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"SedentaryActiveDistance_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
+
+    curPlot <- ggplot(data=dataFrame, aes(x=LightActiveDistance, y=TotalDistance, group=Calories)) + 
+        scale_color_viridis(option = "D")+  aes(color=Calories) + geom_jitter() 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"LightlyActiveDistance_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
+  
 
     curPlot <- ggplot(data=dataFrame, aes(x=ModeratelyActiveDistance, y=TotalDistance, group=Calories)) +
         scale_color_viridis(option = "D")+  aes(color=Calories) + geom_jitter() 
-    curPlot  <- curPlot 
-    #View(curPlot)
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"ModeratelyActive_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
+
+ 
+    curPlot <- ggplot(data=dataFrame, aes(x=VeryActiveDistance, y=TotalDistance, group=Calories)) +
+        scale_color_viridis(option = "D")+  aes(color=Calories) + geom_jitter() 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"VeryActiveDistance_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
+  
+    distanceDF <- pivot_longer(data=dataFrame, 4, names_to = "type", values_to = "distance", values_drop_na = FALSE)
+    distanceDF <- pivot_longer(data=dataFrame, 7:10, names_to = "type", values_to = "distance", values_drop_na = FALSE)
+    curPlot <- ggplot(data=distanceDF,  aes(x=distance, fill=type)) + geom_histogram()
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"Distance_ByType.png",sep="" ), plot=curPlot,  device = "png")
 
     
-    curPlot <- ggplot(data=dataFrame, aes(x=ModeratelyActiveDistance, y=TotalDistance, group=Calories)) +
+
+
+    #
+    # Minutes by Type and Calories
+    #
+    curPlot <- ggplot(data=dataFrame, aes(x=SedentaryMinutes, y=TotalDistance, group=Calories)) +
         scale_color_viridis(option = "D")+  aes(color=Calories) + geom_point() 
-    curPlot  <- curPlot 
-    View(curPlot)
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"SedentaryMinutes_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
 
+    curPlot <- ggplot(data=dataFrame, aes(x=LightlyActiveMinutes, y=TotalDistance, group=Calories)) +
+        scale_color_viridis(option = "D")+  aes(color=Calories) + geom_jitter() 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"LightlyActiveMinutes_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
+  
 
+    curPlot <- ggplot(data=dataFrame, aes(x=FairlyActiveMinutes, y=TotalDistance, group=Calories)) +
+        scale_color_viridis(option = "D")+  aes(color=Calories) + geom_jitter() 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"FairlyActiveMinutes_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
+
+ 
+    curPlot <- ggplot(data=dataFrame, aes(x=VeryActiveMinutes, y=TotalDistance, group=Calories)) +
+        scale_color_viridis(option = "D")+  aes(color=Calories) + geom_jitter() 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"VeryActiveMinutes_TotalDistance_byCalories.png",sep="" ), plot=curPlot,  device = "png")
     
-    curPlot <- ggplot(data=dataFrame, aes(x=TotalDistance, group=Calories)) 
-    curPlot <- curPlot + scale_color_viridis(option = "D")+  aes(color=Calories) + geom_histogram(bins=10) #+ scale_x_date(date_labels = "%Y-%m-%d")
-    mid <- mean(dataFrame$Calories)
-    View(curPlot)
+    print(class(dataFrame$dfTime))
 
+    #X  = Date, Y = TotalDistance
+    curPlot <- ggplot(data=dataFrame, aes(y=TotalDistance, x=Calories, group=Id)) + aes(color=Id) + geom_point() + geom_smooth() + #scale_x_date(date_labels = "%m/%d/%Y") +
+    scale_color_viridis(option = "D")
 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', "TotalDistancevsCalories_byId.png",sep="" ), plot=curPlot,  device = "png")
 
+    #X  = Date, Y = TotalSteps
+    curPlot <- ggplot(data=dataFrame, aes(y=TotalSteps, x=Calories, group=Id)) + aes(color=Id) + geom_point() + geom_smooth() + #scale_x_date(date_labels = "%m/%d/%Y") +
+    scale_color_viridis(option = "D")
 
-            # numBins <- 10
-            # # breakDiff <- (max(dataFrame[[c]]) - min(dataFrame[[c]]))
-            # # print(breakDiff)
-            # # numBreaks <- cut(dataFrame[[c]], breaks= seq(min(dataFrame[[c]]), max(dataFrame[[c]]),  breakDiff/10))
-            # # print(numBreaks)
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', "TotalStepsvsCalories_byId.png",sep="" ), plot=curPlot,  device = "png")
 
-            # #By Count
-            # curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], fill=group)) + geom_histogram(aes(fill=..count..), bins=numBins) 
-            # curPlot <- curPlot + scale_fill_gradient("Count", low="blue", high="red")
-            # ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"_summaryHist_byCount.png",sep="" ), plot=curPlot,  device = "png")
+    #X  = Date, Y = Calories
+    curPlot <- ggplot(data=dataFrame, aes(y=TotalSteps, x=Calories, group=Id)) + aes(color=Id) + geom_point() + geom_smooth() + #scale_x_date(date_labels = "%m/%d/%Y") +
+    scale_color_viridis(option = "D")
 
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', "TotalStepsvsCalories_byId.png",sep="" ), plot=curPlot,  device = "png")
 
-     
-            # #By Id
-            # curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], group=Id)) + geom_histogram(aes(fill=Id)) 
-            # mid<-mean(dataFrame$Id)
-            # curPlot <- curPlot + scale_fill_gradient("Id",low="blue",  high="red")
-            # ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"_summaryHist_byId.png",sep="" ), plot=curPlot,  device = "png")
+    #TODO
+    minutesDF <- pivot_longer(data=dataFrame, 11:14, names_to = "type", values_to = "minutes", values_drop_na = FALSE)
+    curPlot <- ggplot(data=minutesDF,  aes(x=minutes, fill=type)) + geom_histogram()
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"Minutes_ByTypeHist.png",sep="" ), plot=curPlot,  device = "png")
 
-            # curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], y=dfTime, group=Id)) + aes(color=Id) + geom_jitter() + scale_y_date(date_labels = "%Y-%m-%d")
-            # #curPlot + scale_fill_brewer(palette="Dark2")
-            # curPlot  <- curPlot + scale_color_gradient(low="blue", high="red")
-            # mid<-mean(dataFrame$Id)
-            # curPlot  <- curPlot + scale_color_gradient2(midpoint=mid, low="blue",  high="red", space ="Lab" )
-            
-            # ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', c,"_summaryScatter_byId.png",sep="" ), plot=curPlot,  device = "png")
+    curPlot <- ggplot(data=minutesDF,  aes(x=minutes, y=Calories, color=type)) + geom_jitter()
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"Minutes_ByType.png",sep="" ), plot=curPlot,  device = "png")
 
+    #Average the dates
+
+    avgSedentaryMinutes <- aggregate(dataFrame$SedentaryMinutes, list(dataFrame$Id), 
+        FUN=(function(x){ifelse(sum(x==0)>0 & sum(x !=0) >0, mean(x[x>0]), mean(x))}))
+    # names(averagedList)[1] <- 'AvgSedentaryMinutes'
+
+    avgLightlyActiveMinutes <- aggregate(dataFrame$LightlyActiveMinutes, list(dataFrame$Id), 
+        FUN=(function(x){ifelse(sum(x==0)>0 & sum(x !=0) >0, mean(x[x>0]), mean(x))}))
+
+    avgFairlyActiveMinutes <- aggregate(dataFrame$FairlyActiveMinutes, list(dataFrame$Id), 
+    FUN=(function(x){ifelse(sum(x==0)>0 & sum(x !=0) >0, mean(x[x>0]), mean(x))}))
+
+    avgVeryActiveMinutes <- aggregate(dataFrame$VeryActiveMinutes, list(dataFrame$Id), 
+        FUN=(function(x){ifelse(sum(x==0)>0 & sum(x !=0) >0, mean(x[x>0]), mean(x))}))
         
-            
-            # # if (c != "Id"){
-            # #     for(user in unique(dataFrame[c("Id")])){
-            # #         curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], y=dfTime)) + geom_jitter(color="blue") + scale_y_date(date_labels = "%Y-%m-%d")
-            # #         ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', c,"_summaryScatter_.png",sep="" ), plot=curPlot,  device = "png")
-            # #     }
-            # # }
-    #}
+    avgDF <- aggregate(cbind(SedentaryMinutes, LightlyActiveMinutes, FairlyActiveMinutes,VeryActiveMinutes) ~ Id , data=dataFrame, FUN = mean, na.rm = TRUE)
+    print(avgDF)
+
+    curPlot <- ggplot(data=minutesDF,  aes(x=Id, y=Calories, color=type)) + geom_jitter()
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"Minutes_ByType.png",sep="" ), plot=curPlot,  device = "png")
+
+
+    #TODO Types bin vs total distance grouped by Calories
+    #distanceDF <- select(data=dataFrame, Id)
+    #distanceDF <- distanceDF + pivot_longer(data=dataFrame, 4, names_to = "type", values_to = "distance", values_drop_na = FALSE)
+    #distanceDF <- pivot_longer(data=dataFrame, 7:10, names_to = "type", values_to = "distance", values_drop_na = FALSE)
+    # minutesDF <- pivot_longer(data=dataFrame, 11:14, names_to = "type", values_to = "minutes", values_drop_na = FALSE)
+    
+    #TODO
+    #Very-Fairly and Lightly and Sedentary vs Cals
+
+
+
 }

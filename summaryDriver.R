@@ -1,5 +1,5 @@
 source("./summaryFunctions.R")
-source("./dailyActivites.R")
+source("./DailyActivites.R")
 
 dataPath <- "./FitabaseData"
 
