@@ -122,11 +122,37 @@ dailyActivityAnalysis <- function(fileNameInput){
     avgVeryActiveMinutes <- aggregate(dataFrame$VeryActiveMinutes, list(dataFrame$Id), 
         FUN=(function(x){ifelse(sum(x==0)>0 & sum(x !=0) >0, mean(x[x>0]), mean(x))}))
         
+    avgCalories <- aggregate(dataFrame$Calories, list(dataFrame$Id), 
+        FUN=(function(x){ifelse(sum(x==0)>0 & sum(x !=0) >0, mean(x[x>0]), mean(x))}))
+        
     avgDF <- aggregate(cbind(SedentaryMinutes, LightlyActiveMinutes, FairlyActiveMinutes,VeryActiveMinutes) ~ Id , data=dataFrame, FUN = mean, na.rm = TRUE)
+    total <- rowSums(avgDF[,2:5])
+    avgDF$Id <- seq(1, length(avgDF$Id), 1)
+    avgDF <- pivot_longer(data=avgDF, 2:5, names_to = "Type", values_to = "Minutes", values_drop_na = FALSE)
+  
+    curPlot <- ggplot(avgDF,            # Create ggplot2 plot scaled to 1.00
+              aes(x = avgDF$Id, #seq(1, length(avgDF$Id), by = 1),
+                  y = Minutes,
+                  fill = factor(Type, levels=c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes", "SedentaryMinutes")))) +
+                  labs(fill = "Type") + 
+    geom_bar(position = "fill", stat = "identity") +  scale_y_continuous(labels = scales::percent_format())
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"TypeMinutes_ByID.png",sep="" ), plot=curPlot,  device = "png")
+
+    # Sum Very Active and Fairly Active by Calories
+
+    # avgCalories <- aggregate(dataFrame$Calories, list(dataFrame$Id), 
+    #     FUN=(function(x){ifelse(sum(x==0)>0 & sum(x !=0) >0, mean(x[x>0]), mean(x))}))
+    
+    avgDF <- aggregate(cbind(FairlyActiveMinutes,VeryActiveMinutes, Calories) ~ Id , data=dataFrame, FUN = mean, na.rm = TRUE)
+    avgDF$SemiActiveMinutes <- rowSums(avgDF[,2:3])
     print(avgDF)
 
-    curPlot <- ggplot(data=minutesDF,  aes(x=Id, y=Calories, color=type)) + geom_jitter()
-    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"Minutes_ByType.png",sep="" ), plot=curPlot,  device = "png")
+    avgDF$Id <- seq(1, length(avgDF$Id), 1)
+    curPlot <- ggplot(avgDF,            # Create ggplot2 plot scaled to 1.00
+              aes(x = Calories, 
+                  y = SemiActiveMinutes)) +
+        scale_color_viridis(option = "D") + geom_point() + geom_smooth(method=lm)
+    ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"SemiActivevsCalories.png",sep="" ), plot=curPlot,  device = "png")
 
 
     #TODO Types bin vs total distance grouped by Calories
