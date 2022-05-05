@@ -21,7 +21,7 @@ summaryPlots <- function(fileNameInput){
     print(head(dataFrame))
 
     for(c in colnames(dataFrame)) {
-        print(paste(c, "this is class:", class(dataFrame[[c]])))
+        #print(paste(c, "this is class:", class(dataFrame[[c]])))
         if(class(dataFrame[[c]])=='numeric' || class(dataFrame[[c]])=='integer') {
 
             numBins <- 10
@@ -33,7 +33,7 @@ summaryPlots <- function(fileNameInput){
             #By Count
             curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], fill=group)) + geom_histogram(aes(fill=..count..), bins=numBins) 
             curPlot <- curPlot + scale_fill_gradient("Count", low="blue", high="red")
-            ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"_summaryHist_byCount.png",sep="" ), plot=curPlot,  device = "png")
+            ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/SummaryHist_',c,"_byCount.png",sep="" ), plot=curPlot,  device = "png")
 
 
      
@@ -41,7 +41,7 @@ summaryPlots <- function(fileNameInput){
             curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], group=Id)) + geom_histogram(aes(fill=Id)) 
             mid<-mean(dataFrame$Id)
             curPlot <- curPlot + scale_fill_gradient("Id",low="blue",  high="red")
-            ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',c,"_summaryHist_byId.png",sep="" ), plot=curPlot,  device = "png")
+            ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/SummaryHist_',c,"_byId.png",sep="" ), plot=curPlot,  device = "png")
 
             curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], y=dfTime, group=Id)) + aes(color=Id) + geom_jitter() + scale_y_date(date_labels = "%Y-%m-%d")
             #curPlot + scale_fill_brewer(palette="Dark2")
@@ -49,7 +49,7 @@ summaryPlots <- function(fileNameInput){
             mid<-mean(dataFrame$Id)
             curPlot  <- curPlot + scale_color_gradient2(midpoint=mid, low="blue",  high="red", space ="Lab" )
             
-            ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', c,"_summaryScatter_byId.png",sep="" ), plot=curPlot,  device = "png")
+            ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/SummaryScatter_', c,"_byId.png",sep="" ), plot=curPlot,  device = "png")
 
         
             
