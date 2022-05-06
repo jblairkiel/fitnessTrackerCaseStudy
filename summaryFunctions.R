@@ -17,14 +17,12 @@ summaryPlots <- function(fileNameInput){
             dataFrame$dfTime <- dataFrame[[c]]
         }
     }
-    print(colnames(dataFrame))
-    print(head(dataFrame))
 
     for(c in colnames(dataFrame)) {
         #print(paste(c, "this is class:", class(dataFrame[[c]])))
         if(class(dataFrame[[c]])=='numeric' || class(dataFrame[[c]])=='integer') {
 
-            numBins <- 10
+            numBins <- 15
             # breakDiff <- (max(dataFrame[[c]]) - min(dataFrame[[c]]))
             # print(breakDiff)
             # numBreaks <- cut(dataFrame[[c]], breaks= seq(min(dataFrame[[c]]), max(dataFrame[[c]]),  breakDiff/10))
@@ -38,14 +36,14 @@ summaryPlots <- function(fileNameInput){
 
      
             #By Id
-            curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], group=Id)) + geom_histogram(aes(fill=Id)) 
+            curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], group=Id)) + geom_histogram(aes(fill=Id), bins=numBins) 
             mid<-mean(dataFrame$Id)
             curPlot <- curPlot + scale_fill_gradient("Id",low="blue",  high="red")
             ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/SummaryHist_',c,"_byId.png",sep="" ), plot=curPlot,  device = "png")
 
             curPlot <- ggplot(data=dataFrame, aes(x=.data[[c]], y=dfTime, group=Id)) + aes(color=Id) + geom_jitter() + scale_y_date(date_labels = "%Y-%m-%d")
             #curPlot + scale_fill_brewer(palette="Dark2")
-            curPlot  <- curPlot + scale_color_gradient(low="blue", high="red")
+            #curPlot  <- curPlot + scale_color_gradient(low="blue", high="red")
             mid<-mean(dataFrame$Id)
             curPlot  <- curPlot + scale_color_gradient2(midpoint=mid, low="blue",  high="red", space ="Lab" )
             

@@ -17,6 +17,11 @@ I began with the dailyActivity.csv, and proceeded to summarize each *.csv.
 <img src="plots\dailyActivity_merged\SummaryScatter_Calories_byId.png" alt="Calories Historgram" title="Calories Historgram" width="400" height="400" /> 
 </div>
 
+At this point I start to form 
+
+~[](plots\dailyActivity_merged\TotalStepsvsCalories_byId.png)
+
+![](plots\dailyActivity_merged\Distance_ByTypeBar.png)
 
 Interesting Point: 
 ![](plots\dailyActivity_merged\CaloriesandStep-DistanceRatio.png)

@@ -50,7 +50,6 @@ dailyActivityAnalysis <- function(fileNameInput){
     sdRat <- aggregate(cbind(stepsDistanceRatio, Calories) ~ Id, data=dataFrame, mean, na.rm = TRUE)
     sdRat <- arrange(sdRat, stepsDistanceRatio)
     sdRat$Id <- seq(1, length(sdRat$Id), 1)
-    write.csv(sdRat, "stepsDistanceRatio.csv")
     curPlot <- ggplot(data=sdRat, aes(x=Id, y=stepsDistanceRatio, fill=Calories)) +
         scale_fill_viridis() +
         geom_bar(position='stack', stat='identity') 
@@ -64,24 +63,24 @@ dailyActivityAnalysis <- function(fileNameInput){
     #
     #Distance by types
     #
-    curPlot <- ggplot(data=dataFrame, aes(x=SedentaryActiveDistance, y=SedentaryMinutes, group=Calories)) +
+    curPlot <- ggplot(data=dataFrame, aes(x=SedentaryActiveDistance, y=SedentaryMinutes, color=Calories)) +
         scale_color_viridis(option = "D")+  geom_point() +
         geom_smooth(aes(x=SedentaryActiveDistance, y=SedentaryMinutes, color=Calories), method = "lm")
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"DistanceandMinutes_SedentaryActive_byCalories.png",sep="" ), plot=curPlot,  device = "png")
 
-    curPlot <- ggplot(data=dataFrame, aes(x=LightActiveDistance, y=LightlyActiveMinutes, group=Calories)) + 
+    curPlot <- ggplot(data=dataFrame, aes(x=LightActiveDistance, y=LightlyActiveMinutes, color=Calories)) + 
         scale_color_viridis(option = "D")+   geom_jitter()  +
         geom_smooth(aes(x=LightActiveDistance, y=LightlyActiveMinutes, color=Calories), method = "lm")
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"DistanceandMinutes_LightlyActive_byCalories.png",sep="" ), plot=curPlot,  device = "png")
   
 
-    curPlot <- ggplot(data=dataFrame, aes(x=ModeratelyActiveDistance, y=FairlyActiveMinutes, group=Calories)) +
+    curPlot <- ggplot(data=dataFrame, aes(x=ModeratelyActiveDistance, y=FairlyActiveMinutes, color=Calories)) +
         scale_color_viridis(option = "D")+    geom_jitter()  +
         geom_smooth(aes(x=ModeratelyActiveDistance, y=FairlyActiveMinutes, color=Calories), method = "lm")
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"DistanceandMinutes_FairlyActive_byCalories.png",sep="" ), plot=curPlot,  device = "png")
 
  
-    curPlot <- ggplot(data=dataFrame, aes(x=VeryActiveDistance, y=VeryActiveMinutes, group=Calories)) +
+    curPlot <- ggplot(data=dataFrame, aes(x=VeryActiveDistance, y=VeryActiveMinutes, color=Calories)) +
         scale_color_viridis(option = "D")+   geom_jitter()  +
         geom_smooth(aes(x=VeryActiveDistance, y=VeryActiveMinutes, color=Calories), method = "lm")
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"DistanceandMinutes_VeryActive_byCalories.png",sep="" ), plot=curPlot,  device = "png")
@@ -94,7 +93,6 @@ dailyActivityAnalysis <- function(fileNameInput){
     #Average Distance_ByTypeBar
     distanceDF <- filter(dataFrame, (ActivityDate >= "4/12/2016" & ActivityDate <= "4/14/2016" )) 
     distanceDF$sum <- distanceDF$SedentaryActiveDistance + distanceDF$LightActiveDistance + distanceDF$ModeratelyActiveDistance + distanceDF$VeryActiveDistance
-    write.csv(distanceDF,"avgDF.csv")
     #distanceDF <-aggregate(. ~Id, data=distanceDF, FUN=mean, na.rm=FALSE)
     distanceDF <- arrange(distanceDF, sum)
     distanceDF$Id <- seq(1, length(distanceDF$Id), 1)
@@ -127,19 +125,19 @@ dailyActivityAnalysis <- function(fileNameInput){
     #print(class(dataFrame$dfTime))
 
     #X  = Date, Y = TotalDistance
-    curPlot <- ggplot(data=dataFrame, aes(y=TotalDistance, x=Calories, group=Id)) + aes(color=Id) + geom_point() + geom_smooth() + #scale_x_date(date_labels = "%m/%d/%Y") +
+    curPlot <- ggplot(data=dataFrame, aes(y=TotalDistance, x=Calories, group=Id)) + aes(color=Id) + geom_jitter() + geom_smooth(method='lm') + #scale_x_date(date_labels = "%m/%d/%Y") +
     scale_color_viridis(option = "D")
 
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', "TotalDistancevsCalories_byId.png",sep="" ), plot=curPlot,  device = "png")
 
     #X  = Date, Y = TotalSteps
-    curPlot <- ggplot(data=dataFrame, aes(y=TotalSteps, x=Calories, group=Id)) + aes(color=Id) + geom_point() + geom_smooth() + #scale_x_date(date_labels = "%m/%d/%Y") +
+    curPlot <- ggplot(data=dataFrame, aes(y=TotalSteps, x=Calories, group=Id)) + aes(color=Id) + geom_jitter() + geom_smooth(method='lm') + #scale_x_date(date_labels = "%m/%d/%Y") +
     scale_color_viridis(option = "D")
 
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', "TotalStepsvsCalories_byId.png",sep="" ), plot=curPlot,  device = "png")
 
     #X  = Date, Y = Calories
-    curPlot <- ggplot(data=dataFrame, aes(y=TotalSteps, x=Calories, group=Id)) + aes(color=Id) + geom_point() + geom_smooth() + #scale_x_date(date_labels = "%m/%d/%Y") +
+    curPlot <- ggplot(data=dataFrame, aes(y=TotalSteps, x=Calories, group=Id)) + aes(color=Id) + geom_jitter() + geom_smooth(method='lm') + #scale_x_date(date_labels = "%m/%d/%Y") +
     scale_color_viridis(option = "D")
 
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/', "TotalStepsvsCalories_byId.png",sep="" ), plot=curPlot,  device = "png")
@@ -147,23 +145,20 @@ dailyActivityAnalysis <- function(fileNameInput){
     #Mintues and Calories 
     #minutesDF <- arrange(minutesDF, MostlyInactiveMinutes)
     minutesDF <- pivot_longer(data=dataFrame, 11:14, names_to = "type", values_to = "minutes", values_drop_na = FALSE)
-    minutesDF$type <- factor(minutesDF$type, levels=c('SedentaryMinutes','LightlyActiveMinutes','FairlyActiveMinutes', 'VeryActiveMinutes'))
-    curPlot <- ggplot(data=minutesDF, aes(x=minutes,  fill = factor(Type, levels=c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes", "SedentaryMinutes"))) +
-            labs(fill = "Type") ) + 
+    #minutesDF$type <- factor(minutesDF$type, levels=c('SedentaryMinutes','LightlyActiveMinutes','FairlyActiveMinutes', 'VeryActiveMinutes'))
+    curPlot <- ggplot(data=minutesDF, aes(x=minutes,  fill = type)) +
         geom_histogram()
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"CaloriesbyMinutes_ByTypeHist.png",sep="" ), plot=curPlot,  device = "png")
 
     curPlot <- ggplot(data=minutesDF,  
-        aes(x=minutes,  y=Calories,   color = factor(Type, levels=c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes", "SedentaryMinutes"))) +
-            labs(fill = "Type")  ) + 
+        aes(x=minutes,  y=Calories,   color = type)) +
         geom_jitter() + 
         geom_smooth(aes(x=minutes, y=Calories, color=type), method = "lm")
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"CaloriesbyMinutes_ByTypeTrend.png",sep="" ), plot=curPlot,  device = "png")
 
     
     curPlot <- ggplot(data=minutesDF,  
-        aes(x=minutes, y=Calories, color = factor(Type, levels=c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes", "SedentaryMinutes"))) + 
-            labs(fill = "Type") ) + 
+        aes(x=minutes, y=Calories, color = type)) + 
         geom_smooth(aes(x=minutes, y=Calories, color=type), method = "lm") #No Jitter
     ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"CaloriesbyMinutes_ByTypeTrendOnly.png",sep="" ), plot=curPlot,  device = "png")
 
@@ -192,7 +187,7 @@ dailyActivityAnalysis <- function(fileNameInput){
     avgDF <- pivot_longer(data=avgDF, 2:5, names_to = "Type", values_to = "Minutes", values_drop_na = FALSE)
   
     curPlot <- ggplot(avgDF,            # Create ggplot2 plot scaled to 1.00
-              aes(x = avgDF$Id, #seq(1, length(avgDF$Id), by = 1),
+              aes(x = Id, #seq(1, length(avgDF$Id), by = 1),
                   y = Minutes,
                   fill = factor(Type, levels=c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes", "SedentaryMinutes")))) +
                   labs(fill = "Type") + 
