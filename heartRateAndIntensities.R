@@ -13,13 +13,17 @@ heartRateAnalysis <- function(heartRateFilename, dailyIntensitiesFilename){
     
     for(c in colnames(hrDataFrame)) {
         if(class(hrDataFrame[[c]])=='character') {
-            hrDataFrame$dfTime <- format(hrDataFrame$hrDataFrame[[c]],'%m/%d/%Y:%H:%M:%S %p')  #strptime(hrDataFrame[[c]],format='%b/%d/%Y:%H:%M:%S %p') # as.POSIXct(hrDataFrame[[c]], format="%m/%d/%Y% %H:%M:%S", tz="UTC") 
+            hrDataFrame$dfTime <- format(as.POSIXct(hrDataFrame[[c]],format='%m/%d/%Y %H:%M'), format='%m/%d/%Y %I:%M:%S %p')
+            #hrDataFrame$dfTime <- format(strptime(substr(as.POSIXct(sprintf("%04.0f", hrDataFrame$hrDataFrame[[c]]), 
+            #                     format="%b/%d/%Y %H%M"), 12, 16), '%b/%d/%Y %H:%M'), '%b/%d/%Y %I:%M')
+            #format(hrDataFrame$hrDataFrame[[c]], '') #'%b/%d/%Y %H:%M')  #strptime(hrDataFrame[[c]],format='%b/%d/%Y:%H:%M:%S %p') # as.POSIXct(hrDataFrame[[c]], format="%m/%d/%Y% %H:%M:%S", tz="UTC") 
         } else if (class(hrDataFrame[[c]])=='Date'){
             hrDataFrame$dfTime <- hrDataFrame[[c]]
         }
     }
-    #print(colnames(hrDataFrame))
+    print(colnames(hrDataFrame))
     #print(head(hrDataFrame))
+    #print(class(hrDataFrame$DateTime))
     #[1] "Id"       "DateTime"  "Value
 
 
@@ -30,48 +34,37 @@ heartRateAnalysis <- function(heartRateFilename, dailyIntensitiesFilename){
     
     for(c in colnames(diDataFrame)) {
         if(class(diDataFrame[[c]])=='character') {
-            diDataFrame$dfTime <-  diDataFrame[[c]] #as.POSIXct(diDataFrame[[c]], format="%m/%d/%Y% %H:%M:%S", tz="UTC") 
+            diDataFrame$dfTime <- format(as.POSIXct(diDataFrame[[c]],format='%m/%d/%Y %I:%M:%S %p'), format='%m/%d/%Y %I:%M:%S %p')
+            #diDataFrame$dfTime <-  diDataFrame[[c]] #as.POSIXct(diDataFrame[[c]], format="%m/%d/%Y% %H:%M:%S", tz="UTC") 
         } else if (class(diDataFrame[[c]])=='Date'){
             diDataFrame$dfTime <- diDataFrame[[c]]
         }
     }
-    #print(colnames(diDataFrame))
+    print(colnames(diDataFrame))
     #print(head(diDataFrame))
     #[1] "Id"        "DateTime"  "Intensity"
 
-
+    hrDataFrame
     mergeDFx <- merge(hrDataFrame, diDataFrame, by="dfTime", all.x=TRUE)
-    mergeDFfilt <- filter(mergeDFx, Id.x == '4020332650')
-    #colnames(mergeDF) <- c("dfTime", "Id")
-
-    print(colnames(mergeDFx))
     print(head(mergeDFx))
-
-    curPlot <- ggplot(data=mergeDFfilt, aes(x=DateTime.x, y=Value, group=Id.x)) + 
+    
+    mergeDFx$datedate <- as.Date(mergeDFx$dfTime, format='%m/%d/%Y %I:%M:%S %p')
+    mergeDFfilt <- filter(mergeDFx, Id.x == '2347167796')
+    
+    print(head(mergeDFfilt))
+    
+    write.csv(mergeDFfilt, 'mergeDFfilt.csv')
+    print(colnames(mergeDFfilt))
+    print(head(mergeDFfilt))
+    print(class(mergeDFfilt$dateagain))
+    
+    curPlot <- ggplot(data=mergeDFfilt, aes(x=datedate, y=Value, group=Id.x)) + 
         scale_color_viridis() +
-        geom_line()  
-        #scale_x_date(date_breaks = "1 week", date_labels = "%D") 
+        geom_jitter() +
+        scale_x_date(date_breaks = "1 week", date_labels = "%D") 
     ggsave(filename=paste('./plots/',substr(heartRateFilename,16,nchar(heartRateFilename)-4),'/',"HROverTime.png",sep="" ), plot=curPlot,  device = "png")
 
     
-    # mostActiveDaysDF <- aggregate(cbind(TotalSteps) ~ dfTime, data=hrDataFrame, mean)
-    # curPlot <- ggplot(data=mostActiveDaysDF, aes(x=dfTime, y=TotalSteps, fill=TotalSteps)) + 
-    #     scale_fill_viridis() +
-    #     geom_bar(position='stack', stat='identity') + 
-    #     scale_x_date(date_breaks = "1 week", date_labels = "%D") 
-    # ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"StepsTraveledPerDay.png",sep="" ), plot=curPlot,  device = "png")
-
-    # #Calories and Step/Distance Ratio
-    # hrDataFrame$stepsDistanceRatio <- (hrDataFrame$TotalSteps / hrDataFrame$TotalDistance)
-    # sdRat <- aggregate(cbind(stepsDistanceRatio, Calories) ~ Id, data=hrDataFrame, mean, na.rm = TRUE)
-    # sdRat <- arrange(sdRat, stepsDistanceRatio)
-    # sdRat$Id <- seq(1, length(sdRat$Id), 1)
-    # curPlot <- ggplot(data=sdRat, aes(x=Id, y=stepsDistanceRatio, fill=Calories)) +
-    #     scale_fill_viridis() +
-    #     geom_bar(position='stack', stat='identity') 
-    # ggsave(filename=paste('./plots/',substr(fileNameInput,16,nchar(fileNameInput)-4),'/',"CaloriesandStep-DistanceRatio.png",sep="" ), plot=curPlot,  device = "png")
-
-
 
 
 }
